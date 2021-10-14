@@ -1,0 +1,29 @@
+
+/ITL/scene/echo set faust 'import("stdfaust.lib"); process =  ef.echo1s, ef.echo1s;';
+/ITL/scene/echo/echo__1000/feedback 90;
+/ITL/scene/echo/echo__1000/millisecond 80;
+/ITL/scene/echo show 0;
+/ITL/scene/echo get in out;
+/ITL/scene/audio get in out;
+/ITL/scene/audioOutput get in out;
+/ITL/scene/echo connect audioOutput;
+/ITL/scene/audio connect echo;
+
+__END__
+
+/ITL/scene/audio connect audioOutput;
+
+/ITL/scene/audio  get in out duration;
+/ITL/scene/audioOutput  get in out;
+/ITL/scene/audioOutput  get;
+/ITL/scene/audio  get ;
+/ITL/scene/audio  show 1;
+/ITL/scene/audio set audio "rsrc/perspectives.mp3";
+
+/ITL/scene/audio z 2;
+/ITL/scene/audio  play 1;
+/ITL/scene/audio  play 0;
+
+/ITL/scene get;
+/ITL get version;
+

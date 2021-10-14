@@ -1,0 +1,37 @@
+html, body {
+	padding : 0px;
+	margin-right : 40px;
+	margin-left : 20px;
+	margin-top : 0px;
+	font: 1em Helvetica,Arial,sans-serif;
+	}
+
+div 	{ padding-left : 2em; font-family : Helvetica,Arial,sans-serif; font-size : 11pt }
+
+h1 		{ padding-left : 2em; padding-top : 1em; padding-bottom : 0.1em; font: 1.5em Helvetica,Arial,sans-serif; }
+h2 		{ padding-left : 2em; padding-top : 1em; padding-bottom : 0.1em; font: 1.3em Helvetica,Arial,sans-serif; }
+li 		{ padding-left : 1em; padding-top : 0.2em; padding-bottom : 0.1em; }
+
+#footer	{ color: rgb(80,80,80); opacity : 0.7; }
+#footnote	{ font-size: 10pt; text-align: center; color: rgb(120,120,120); line-height: 140% }
+#logograme		{ float : right; }
+
+.zip	{ padding-right : 1.5em; vertical-align: middle; }
+
+#title {
+	padding-top : 1.5em;
+	padding-bottom : 1.2em;
+	padding-left : 1.5em;
+	font: 2.2em Helvetica,Arial,sans-serif;
+	text-transform: uppercase;
+}
+
+#intro {
+	padding-top : 1.5em;
+	padding-left : 3em;
+	margin-right : 80px;
+}
+
+A      				{ text-decoration: none; border-style: none;}
+A:link,A:visited	{ color: rgb(112,128,255); }
+A:hover     		{ color: rgb(162,35,41); }
