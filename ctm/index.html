@@ -110,9 +110,13 @@
 	/ITL/scene/cursor watch date  ( /ITL/scene/javascript run "dispdate ( $date%f )" );
 	/ITL/scene/cursor watch timeEnter $duration 555555  ( /ITL/scene/cursor date 0 );
 	/ITL/scene/cursor watch timeEnter $mark2 $mark2 + 1 ( /ITL/scene/sounds/bell1 play 1 );
+	/ITL/scene/cursor watch timeEnter $mark2 + 1 $mark3 ( /ITL/scene/sounds/bell1 play 0 );
 	/ITL/scene/cursor watch timeEnter $mark3 $mark3 + 1 ( /ITL/scene/sounds/bell2 play 1 );
+	/ITL/scene/cursor watch timeEnter $mark3 + 2 $mark4 ( /ITL/scene/sounds/bell2 play 0 );
 	/ITL/scene/cursor watch timeEnter $mark4 $mark4 + 1 ( /ITL/scene/sounds/applause play 1 );
+	/ITL/scene/cursor watch timeEnter $mark4 + 2 $mark5 ( /ITL/scene/sounds/applause play 0 );
 	/ITL/scene/cursor watch timeEnter $mark5 $mark5 + 1 ( /ITL/scene/sounds/next play 1 );
+	/ITL/scene/cursor watch timeEnter $mark5 + 1 555555 ( /ITL/scene/sounds/next play 0 );
 	
 	#---------------------------------------------
 	# a simple controls (play / pause) 
@@ -145,8 +149,6 @@
 	/ITL/scene watch keyDown '2' ( /ITL/scene/cursor date $mark3 );
 	/ITL/scene watch keyDown '3' ( /ITL/scene/cursor date $mark4 );
 	/ITL/scene watch keyDown '4' ( /ITL/scene/cursor date $mark5 );
-	/ITL/scene watch keyDown 's' ( /ITL/scene/sounds/bell1 play 1 );
-	/ITL/scene watch keyDown 'S' ( /ITL/scene/sounds/bell1 play 1 );
 	
 	
 	/ITL/scene/help set txt 'Help';
