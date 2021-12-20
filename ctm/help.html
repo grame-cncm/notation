@@ -1,0 +1,63 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" >
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link rel="stylesheet" href="help.css" />
+        <title>Conf Time Manager Help</title>
+    </head>
+    <body>
+        <h1>Conference Time Manager</h1>
+        <section class=intro>
+        <p>
+            This tool is designed to facilitate time management at conferences.
+            It has already proved to be effective on many occasions. 
+            The principle is to automatically generate audible alerts at key points of the time slot, which gives a better perception of the time flow and thus facilitates its management.
+        </p>
+        <p>The Conference Time Manager has been designed using <a href=https://inscore.grame.fr target=_blank>INScore</a>.</p>
+        </section>
+
+        <section>
+        <h2>Overview</h2>
+        <p>
+            The figure below shows how the time slot is represented with the associated key points. In this case, the time slot goes from 0 to 20 minutes and markers are placed at times 5, 10, 15 and 18 (these are always minutes). As each marker passes, a sound is triggered:
+            <li> at 5: a bell</li>
+            <li> at 10: two successive bells</li>
+            <li> at 15: applause</li>
+            <li> at 18: an invitation to the next speaker</li>
+        </p>
+        <img src=rsrc/screen.png alt="Overview">
+        <p>The current time position is represented both in text form (in minutes:seconds, at the top of the page) and as a red dot that moves along the timeline.
+            At the bottom of the page, a textual controller allows manage the time flow (start, pause, continue). <br />
+            Note that you can also click on the timeline to move to any time position.
+        </p>
+
+        <h3>Keyboard control</h3>
+        <p>
+            You can press keyboard keys to control the time flow:
+            <li>'space bar' : start or stop the time flow,</li>
+            <li>'0' : move the cursor to the beginning,</li>
+            <li>'1' to '4' : moves the cursor to the corresponding marker, tiggers also the corresponding sound.</li>
+        </p>
+
+        <h2>Customizing</h2>
+        <p>You can customize the duration of the time slot using url parameters:
+        <li>'timeslot': changes the time slot duration. Default value is 20 (minutes)</li>
+        <li>'questions': changes the time allocated to questions. Default value is a quarter of the time slot.</li>
+        </p>
+        <p>
+            Note that a time slot is composed of a 'speak time' followed by a 'questions time' as illustrated by the figure below.
+            The sound markers are automatically positionned at 1/3 and 2/3 of the speak period. The questions period starts with applause. The last period is the installation period which starts with an invitation to the next speaker. Its duration is always 2 minutes.
+        </p>
+        <img src=rsrc/time.png alt="Periods">
+
+        <h4>Example</h4>
+        <p class=example>
+            <a href="https://berio.grame.fr/ctm?timeslot=30&questions=10" target=_blank>https://berio.grame.fr/ctm?timeslot=30&questions=10</a> <br />
+            may be used for a 30 minutes time slot, including a 10 minutes period for questions.
+        </p>
+
+    </section>
+    <hr />
+    <a href=https://www.grame.fr target=_blank><img class=grame src=rsrc/grame.png alt='Grame-CNCM'></a>
+    </body>
+</html>

@@ -1,0 +1,209 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" /> 
+	<meta http-equiv="Pragma" content="no-cache" /> 
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<title>INScore Conference Time Manager</title>
+
+	<link href="fonts/fonts.css" rel="stylesheet">
+	<script src="lib/libINScore.js"></script>
+	<script src="lib/INScoreJS.js"></script>
+	<style>
+	body { margin: 20; background: gainsboro; }
+	.inscore { width: 100%; height: 95%; border-radius: 10px; font-size: 1px; background: white }
+	.footer { font-family: Arial, sans-serif; font-size: small; }
+	.logo   { float: right; }
+	</style>
+</head>
+
+<body>
+
+<div class="inscore" id="scene">
+<pre>
+	/ITL/scene/timings set rect 0.01 0.01;	# used to store timings
+	/ITL/scene/timings show 0;
+	/ITL/scene/timings green 20;			# green is used for time slot
+	/ITL/scene/timings blue 5;				# blue is used for questions slot
+	/ITL/scene/javascript run "setTimings()"; 
+
+	tempo = 60;
+	grey = 200 200 200 100;
+	loc = 0.45; 					# control and time y locations 
+
+	mins  = $(/ITL/scene/timings get green);		# time slot duration in minutes	
+	questions  = $(/ITL/scene/timings get blue);	# questions slot in minutes	
+	switchtime = 2;					# time to switch to the next speaker
+	duration = $mins * 15;			# 20 mn x 60 secs /  4 (for quarter notes) 
+	talk   = $duration - ($questions * 15);
+	mark2  = $talk / 3;
+	mark3  = $talk * 2 / 3;
+	mark4  = $talk;
+	mark5  = $duration - ($switchtime * 15);		# 18 mn x 60 secs
+	markshape = rect 0.005 0.2;
+	
+	#######################################
+	# sound files
+	/ITL/scene/sounds set layer;
+	/ITL/scene/sounds/bell1 set audio bell1n.wav;
+	/ITL/scene/sounds/bell2 set audio bell2n.wav;
+	/ITL/scene/sounds/applause 	set audio applause.wav;
+	/ITL/scene/sounds/next 		set audio next-speaker1.wav;
+	/ITL/scene/sounds show 0;
+	
+	#######################################
+	# time line and scene size
+	w = 1.95;
+	/ITL/scene/back set rect $w 0.15;
+	/ITL/scene/back duration $duration;	
+	/ITL/scene/back color 240 240 240;	
+	/ITL/scene/back duration $duration + 0.001;	
+	/ITL/scene/time set line wa $w 0;
+	/ITL/scene/time duration $duration + 0.001;	
+	/ITL/scene/time penWidth 1.2;
+	
+	#######################################
+	# time marks
+	h = 0.5;
+	/ITL/scene/mtime1 set txt 0;
+	/ITL/scene/mtime2 set txt $mark2 / 15;
+	/ITL/scene/mtime3 set txt $mark3 / 15;
+	/ITL/scene/mtime4 set txt $mark4 / 15;
+	/ITL/scene/mtime5 set txt $mark5 / 15;
+	/ITL/scene/mtime6 set txt $mins;
+	/ITL/scene/mtime* fontSize 1.3;
+	
+	/ITL/scene/mark1 set $markshape;
+	/ITL/scene/mark2 set $markshape;
+	/ITL/scene/mark3 set $markshape;
+	/ITL/scene/mark4 set $markshape;
+	/ITL/scene/mark5 set $markshape;
+	/ITL/scene/mark6 set $markshape;
+	
+	/ITL/scene/m*1 date 0;
+	/ITL/scene/m*2 date $mark2;
+	/ITL/scene/m*3 date $mark3;
+	/ITL/scene/m*4 date $mark4;
+	/ITL/scene/m*5 date $mark5;
+	/ITL/scene/m*6 date $duration;
+	
+	#######################################
+	# time text
+	/ITL/scene/text set txt "0";
+	/ITL/scene/text fontSize 48;
+	/ITL/scene/text y -$loc;
+	
+	w = 0.04;
+	/ITL/scene/cursor set ellipse $w $w;
+	/ITL/scene/cursor color 250 0 0 ;
+	
+	/ITL/scene/sync mark* back v;
+	/ITL/scene/sync mtime* back syncTop;
+	/ITL/scene/mtime* dy -0.2;
+	/ITL/scene/sync cursor back;
+	
+	/ITL/scene/back watch mouseDown ( /ITL/scene/cursor date '$date');
+	
+	
+	/ITL/scene/cursor watch ddate ( /ITL/scene/javascript run "dispdate ( $date%f )" );
+	/ITL/scene/cursor watch date  ( /ITL/scene/javascript run "dispdate ( $date%f )" );
+	/ITL/scene/cursor watch timeEnter $duration 555555  ( /ITL/scene/cursor date 0 );
+	/ITL/scene/cursor watch timeEnter $mark2 $mark2 + 1 ( /ITL/scene/sounds/bell1 play 1 );
+	/ITL/scene/cursor watch timeEnter $mark3 $mark3 + 1 ( /ITL/scene/sounds/bell2 play 1 );
+	/ITL/scene/cursor watch timeEnter $mark4 $mark4 + 1 ( /ITL/scene/sounds/applause play 1 );
+	/ITL/scene/cursor watch timeEnter $mark5 $mark5 + 1 ( /ITL/scene/sounds/next play 1 );
+	
+	#---------------------------------------------
+	# a simple controls (play / pause) 
+	#---------------------------------------------
+	/ITL/scene/control set txt "Start";
+	/ITL/scene/control y $loc;
+	
+	/ITL/scene/control fontSize 32;
+	/ITL/scene/control watch mouseEnter (/ITL/scene/$self red 240);
+	/ITL/scene/control watch mouseLeave (/ITL/scene/$self red 0);
+	
+	/ITL/scene/control watch mouseDown (
+		/ITL/scene/control push,
+		/ITL/scene/cursor tempo $tempo,
+		/ITL/scene/control set txt "Pause",
+		/ITL/scene/control watch mouseDown (
+			/ITL/scene/cursor tempo 0,
+			/ITL/scene/control set txt "Continue",
+			/ITL/scene/control pop
+		)
+	);
+	
+	
+	#---------------------------------------------
+	# keyboard control 
+	#---------------------------------------------
+	/ITL/scene watch keyDown ' ' ( /ITL/scene/control event mouseDown 0 0 );
+	/ITL/scene watch keyDown '0' ( /ITL/scene/cursor date 0);
+	/ITL/scene watch keyDown '1' ( /ITL/scene/cursor date $mark2 );
+	/ITL/scene watch keyDown '2' ( /ITL/scene/cursor date $mark3 );
+	/ITL/scene watch keyDown '3' ( /ITL/scene/cursor date $mark4 );
+	/ITL/scene watch keyDown '4' ( /ITL/scene/cursor date $mark5 );
+	/ITL/scene watch keyDown 's' ( /ITL/scene/sounds/bell1 play 1 );
+	/ITL/scene watch keyDown 'S' ( /ITL/scene/sounds/bell1 play 1 );
+	
+	
+	/ITL/scene/help set txt 'Help';
+	/ITL/scene/help y 0.7;
+	/ITL/scene/help fontSize 20;
+	alpha = 100;
+	/ITL/scene/help alpha $alpha;
+	/ITL/scene/help watch mouseEnter ( /ITL/scene/help alpha 255 );
+	/ITL/scene/help watch mouseLeave ( /ITL/scene/help alpha $alpha );
+	/ITL/scene/help watch mouseDown  ( /ITL browse help.html );
+	
+</pre>
+</div>
+<p class=footer>
+	<img src=inscore.png width=30 class=logo> Made with <a href="https://inscore.grame.fr" target=_blank>INScore</a>
+</p>
+
+</body>
+<script>
+//------------------------------------------------------------------------
+function dispdate (time) {
+	var secs = Math.floor(time*4);
+	var min = Math.floor(secs/60);
+	secs = secs % 60;
+	let msg = "/ITL/scene/text set txt '" + min + ":";
+	if (secs < 10) msg += "0";
+	return msg + secs + "';";
+}
+
+function getUrlParameter(param) {
+    let args = window.location.search.substring(1);
+	let params = args.split('&');
+	for (let i=0; i < params.length; i++) {
+		let p = params[i].split('=');
+		if (p[0] === param) return p[1];
+	}
+    return false;
+};
+
+function setTimings() {
+	let userslot  = getUrlParameter('timeslot');
+	let userquest = getUrlParameter('questions');
+	let out = "";
+	if (userslot)  {
+		console.log ("User defined time slot:", userslot, "mn");
+		out = "/ITL/scene/timings green " + userslot + ";"
+	}
+	if (userquest) {
+		console.log ("User defined questions slot:", userquest, "mn");
+		out += " /ITL/scene/timings blue " + userquest + ";"
+	}
+	else if (userslot) {
+		out += " /ITL/scene/timings blue " + (userslot / 4) + ";"
+	}
+	return out;
+}
+
+</script>
+
+</html>
