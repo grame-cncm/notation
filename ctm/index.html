@@ -51,7 +51,27 @@
 	/ITL/scene/sounds/applause 	set audio applause.wav;
 	/ITL/scene/sounds/next 		set audio next-speaker1.wav;
 	/ITL/scene/sounds show 0;
+
+	/ITL/scene/sound1 set img "rsrc/sound.png";
+	/ITL/scene/sound2 set img "rsrc/sound.png";
+	/ITL/scene/sound3 set img "rsrc/sound.png";
+	/ITL/scene/sound4 set img "rsrc/sound.png";
+	/ITL/scene/sound1 watch mouseDown ( /ITL/scene/sounds/bell1 play 1 );
+	/ITL/scene/sound2 watch mouseDown ( /ITL/scene/sounds/bell2 play 1 );
+	/ITL/scene/sound3 watch mouseDown ( /ITL/scene/sounds/applause play 1 );
+	/ITL/scene/sound4 watch mouseDown ( /ITL/scene/sounds/next play 1 );
+	/ITL/scene/sound[1-4] watch mouseEnter ( /ITL/scene/$self width 0.12 );
+	/ITL/scene/sound[1-4] watch mouseLeave ( /ITL/scene/$self width 0.1 );
+	xsound = 0.2;
+	/ITL/scene/sound1 x $xsound * -2;
+	/ITL/scene/sound2 x $xsound * -1;
+	/ITL/scene/sound3 x $xsound;
+	/ITL/scene/sound4 x $xsound * 2;
+	/ITL/scene/sound[1-4] width 0.1;
+	/ITL/scene/sound[1-4] y -0.7;
+
 	
+
 	#######################################
 	# time line and scene size
 	w = 1.95;
@@ -101,6 +121,8 @@
 	/ITL/scene/sync mark* back v;
 	/ITL/scene/sync mtime* back syncTop;
 	/ITL/scene/mtime* dy -0.2;
+#	/ITL/scene/sync sound[1-4] back syncTop;
+#	/ITL/scene/sound[1-4] dy -0.5;
 	/ITL/scene/sync cursor back;
 	
 	/ITL/scene/back watch mouseDown ( /ITL/scene/cursor date '$date');
@@ -159,7 +181,7 @@
 </pre>
 </div>
 <p class=footer>
-	<img src=inscore.png width=30 class=logo> Made with <a href="https://inscore.grame.fr" target=_blank>INScore</a>
+	<img src=rsrc/inscore.png width=25 class=logo> Made with <a href="https://inscore.grame.fr" target=_blank>INScore</a>
 </p>
 
 </body>
