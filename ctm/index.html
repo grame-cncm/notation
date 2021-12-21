@@ -91,7 +91,7 @@
 	#######################################
 	# time text
 	/ITL/scene/text set txt "0";
-	/ITL/scene/text fontSize 48;
+	/ITL/scene/text fontSize 50;
 	/ITL/scene/text y -$loc;
 	
 	w = 0.04;
@@ -110,13 +110,9 @@
 	/ITL/scene/cursor watch date  ( /ITL/scene/javascript run "dispdate ( $date%f )" );
 	/ITL/scene/cursor watch timeEnter $duration 555555  ( /ITL/scene/cursor date 0 );
 	/ITL/scene/cursor watch timeEnter $mark2 $mark2 + 1 ( /ITL/scene/sounds/bell1 play 1 );
-	/ITL/scene/cursor watch timeEnter $mark2 + 1 $mark3 ( /ITL/scene/sounds/bell1 play 0 );
 	/ITL/scene/cursor watch timeEnter $mark3 $mark3 + 1 ( /ITL/scene/sounds/bell2 play 1 );
-	/ITL/scene/cursor watch timeEnter $mark3 + 2 $mark4 ( /ITL/scene/sounds/bell2 play 0 );
 	/ITL/scene/cursor watch timeEnter $mark4 $mark4 + 1 ( /ITL/scene/sounds/applause play 1 );
-	/ITL/scene/cursor watch timeEnter $mark4 + 2 $mark5 ( /ITL/scene/sounds/applause play 0 );
 	/ITL/scene/cursor watch timeEnter $mark5 $mark5 + 1 ( /ITL/scene/sounds/next play 1 );
-	/ITL/scene/cursor watch timeEnter $mark5 + 1 555555 ( /ITL/scene/sounds/next play 0 );
 	
 	#---------------------------------------------
 	# a simple controls (play / pause) 
@@ -124,7 +120,7 @@
 	/ITL/scene/control set txt "Start";
 	/ITL/scene/control y $loc;
 	
-	/ITL/scene/control fontSize 32;
+	/ITL/scene/control fontSize 40;
 	/ITL/scene/control watch mouseEnter (/ITL/scene/$self red 240);
 	/ITL/scene/control watch mouseLeave (/ITL/scene/$self red 0);
 	
@@ -153,7 +149,7 @@
 	
 	/ITL/scene/help set txt 'Help';
 	/ITL/scene/help y 0.7;
-	/ITL/scene/help fontSize 20;
+	/ITL/scene/help fontSize 30;
 	alpha = 100;
 	/ITL/scene/help alpha $alpha;
 	/ITL/scene/help watch mouseEnter ( /ITL/scene/help alpha 255 );
