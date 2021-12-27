@@ -542,72 +542,9 @@ function scanPlatform() {
     UnixOS = (os.indexOf('X11') >= 0) || (os.indexOf('Linux') >= 0);
     AndroidOS = (os.indexOf('Android') >= 0);
 }
-///<reference path="lib/inscore.d.ts"/>
-var AIOScanner = /** @class */ (function () {
-    function AIOScanner() {
-    }
-    AIOScanner.init = function () {
-        if (!AIOScanner.fAudioContext) {
-            AIOScanner.fAudioContext = new (window.AudioContext || window.webkitAudioContext)();
-            document.onreadystatechange = function () {
-                if (document.readyState === 'interactive') {
-                    AIOScanner.unlockAudioContext(AIOScanner.fAudioContext);
-                }
-            };
-        }
-    };
-    AIOScanner.scan = function (address) {
-        AIOScanner.init();
-        AIOScanner.fOutput = AIOScanner.fAudioContext.destination;
-        AIOScanner.send(address, AIOScanner.kOutputName, AIOScanner.fOutput);
-        // console.log ("navigator.mediaDevices " + navigator.mediaDevices);
-        // try {
-        if (navigator.mediaDevices) {
-            navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(function (stream) {
-                AIOScanner.fInput = AIOScanner.fAudioContext.createMediaStreamSource(stream);
-                AIOScanner.send(address, AIOScanner.kInputName, AIOScanner.fInput);
-            })
-                .catch(function (err) {
-                AIOScanner.send(address, AIOScanner.kInputName, null);
-                // console.log("AIOScanner can't get input device: " + err);
-            });
-        }
-        else {
-            AIOScanner.send(address, AIOScanner.kInputName, null);
-        }
-        // }
-        // catch (error) { AIOScanner.send (address, AIOScanner.kInputName, null); }
-        AIOScanner.send(address, AIOScanner.kInputName, null);
-    }; // Get All Physical in/out and populate finput & foutput
-    AIOScanner.send = function (address, name, node) {
-        var msg = inscore.newMessageM("set");
-        var prefix = address.substring(0, address.lastIndexOf("/"));
-        inscore.msgAddStr(msg, "audioio");
-        inscore.msgAddI(msg, node ? (node.numberOfInputs ? node.channelCount : 0) : 0); // nb input
-        inscore.msgAddI(msg, node ? (node.numberOfOutputs ? node.channelCount : 0) : 0); // nb output
-        inscore.postMessage(prefix + "/" + name + "", msg);
-    }; // can send a set audioio message for each physical input/output
-    AIOScanner.unlock = function () {
-        AIOScanner.fUnlockEvents.forEach(function (e) { return document.body.removeEventListener(e, AIOScanner.unlock); });
-        AIOScanner.fAudioContext.resume();
-    };
-    AIOScanner.unlockAudioContext = function (audioCtx) {
-        if (audioCtx.state !== "suspended")
-            return;
-        AIOScanner.fUnlockEvents.forEach(function (e) { return document.body.addEventListener(e, AIOScanner.unlock, false); });
-    };
-    AIOScanner.fInput = null;
-    AIOScanner.fOutput = null;
-    AIOScanner.kInputName = "audioInput";
-    AIOScanner.kOutputName = "audioOutput";
-    AIOScanner.fAudioContext = null;
-    AIOScanner.fUnlockEvents = ["touchstart", "touchend", "mousedown", "keydown"];
-    return AIOScanner;
-}());
 ///<reference path="inscore.ts"/>
 ///<reference path="libraries.ts"/>
 ///<reference path="navigator.ts"/>
-///<reference path="AIOScanner.ts"/>
 //----------------------------------------------------------------------------
 var INScoreGlue = /** @class */ (function () {
     function INScoreGlue() {
@@ -621,7 +558,6 @@ var INScoreGlue = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
-                AIOScanner.init();
                 return [2 /*return*/, new Promise(function (success, failure) {
                         _this.fInscore.initialise().then(function () {
                             _this.fInscore.start();
@@ -962,6 +898,55 @@ var BasicGlue = /** @class */ (function (_super) {
 }(INScoreBase));
 var inscoreGlue = new BasicGlue();
 inscoreGlue.start();
+///<reference path="lib/inscore.d.ts"/>
+var AIOScanner = /** @class */ (function () {
+    function AIOScanner() {
+    }
+    AIOScanner.init = function () {
+        if (!AIOScanner.fAudioContext) {
+            AIOScanner.fAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+            document.onreadystatechange = function () {
+                if (document.readyState === 'interactive') {
+                    AIOScanner.unlockAudioContext(AIOScanner.fAudioContext);
+                }
+            };
+        }
+    };
+    AIOScanner.scan = function (address) {
+        AIOScanner.init();
+        AIOScanner.fOutput = AIOScanner.fAudioContext.destination;
+        AIOScanner.create(address, AIOScanner.kOutputName, AIOScanner.fOutput);
+        AIOScanner.create(address, AIOScanner.kInputName, null);
+    };
+    AIOScanner.send = function (address, inputs, outputs) {
+        var msg = inscore.newMessageM("set");
+        inscore.msgAddStr(msg, "audioio");
+        inscore.msgAddI(msg, inputs);
+        inscore.msgAddI(msg, outputs);
+        inscore.postMessage(address, msg);
+    };
+    AIOScanner.create = function (address, name, node) {
+        var inputs = node ? (node.numberOfInputs ? node.channelCount : 0) : 0;
+        var outputs = node ? (node.numberOfOutputs ? node.channelCount : 0) : 0;
+        var prefix = address.substring(0, address.lastIndexOf("/"));
+        AIOScanner.send(prefix + "/" + name, inputs, outputs);
+    };
+    AIOScanner.unlock = function () {
+        AIOScanner.fUnlockEvents.forEach(function (e) { return document.body.removeEventListener(e, AIOScanner.unlock); });
+        AIOScanner.fAudioContext.resume();
+    };
+    AIOScanner.unlockAudioContext = function (audioCtx) {
+        if (audioCtx.state !== "suspended")
+            return;
+        AIOScanner.fUnlockEvents.forEach(function (e) { return document.body.addEventListener(e, AIOScanner.unlock, false); });
+    };
+    AIOScanner.fOutput = null;
+    AIOScanner.kInputName = "audioInput";
+    AIOScanner.kOutputName = "audioOutput";
+    AIOScanner.fAudioContext = null;
+    AIOScanner.fUnlockEvents = ["touchstart", "touchend", "mousedown", "keydown"];
+    return AIOScanner;
+}());
 ///<reference path="AIOScanner.ts"/>
 var AudioRouting = /** @class */ (function () {
     // depending on the channels and the number of inputs / outputs
@@ -1386,11 +1371,9 @@ var JSObjectView = /** @class */ (function () {
 var AudioTools = /** @class */ (function () {
     function AudioTools() {
     }
-    AudioTools.updateConnections = function (obj, view) {
-        var cnx = obj.getAudioInfos();
-        // console.log ("AudioTools: updateConnections connect: " + obj.getOSCAddress() + " " + cnx.connect.size() + " disconnect: " + cnx.disconnect.size())
-        AudioTools.doit(view, obj, cnx.connect, AudioTools.connectSrcDest, "connect");
-        AudioTools.doit(view, obj, cnx.disconnect, AudioTools.disconnectSrcDest, "disconnect");
+    AudioTools.updateConnections = function (cnx, view) {
+        AudioTools.doit(view, cnx.connect, AudioTools.connectSrcDest, "connect");
+        AudioTools.doit(view, cnx.disconnect, AudioTools.disconnectSrcDest, "disconnect");
     };
     AudioTools.connectSrcDest = function (src, dest, srcchan, destchan) {
         if (src && dest) {
@@ -1444,7 +1427,7 @@ var AudioTools = /** @class */ (function () {
         console.log("AudioTools error: trying to disconnect null AudioNode (" + src + " " + dest + ")");
         return false;
     };
-    AudioTools.doit = function (view, obj, list, cnx, op) {
+    AudioTools.doit = function (view, list, cnx, op) {
         var n = list.size();
         for (var i = 0; i < n; i++) {
             var cdesc = list.get(i);
@@ -1642,6 +1625,7 @@ var TMedia = /** @class */ (function (_super) {
         _this.fListen = false;
         _this.fAudioNode = null;
         _this.fRouter = null;
+        AIOScanner.init();
         _this.fAudioNode = AIOScanner.fAudioContext.createMediaElementSource(elt);
         _this.fAudioNode.connect(AIOScanner.fAudioContext.destination);
         _this.fRouter = new AudioRouting(_this.fAudioNode, _this.fAudioNode.channelCount, _this.toString());
@@ -1710,7 +1694,7 @@ var JSAudioView = /** @class */ (function (_super) {
         this.fAudio.style.filter = "drop-shadow(" + val.color + " " + val.xOffset + "px " + val.yOffset + "px " + val.blur + "px)";
     };
     JSAudioView.prototype.updateSpecific = function (obj) {
-        AudioTools.updateConnections(obj, this);
+        AudioTools.updateConnections(obj.getAudioInfos(), this);
         var media = obj.getMediaInfos();
         if (media.playing)
             this.fAudio.play();
@@ -1750,7 +1734,36 @@ var JSAudioioView = /** @class */ (function (_super) {
         return new JSAudioioView(parent);
     };
     JSAudioioView.prototype.updateSpecific = function (obj) {
-        AudioTools.updateConnections(obj, this);
+        if (this.fAudioNode) {
+            var cnx = obj.getAudioInfos();
+            AudioTools.updateConnections(cnx, this);
+        }
+    };
+    JSAudioioView.init = function (id) {
+        var input = JSObjectView.getObjectView(id);
+        var obj = INScore.objects().adapter(input.getIObject());
+        input.initInput(obj);
+    };
+    JSAudioioView.prototype.initInput = function (obj) {
+        var _this = this;
+        if (obj.getName() != AIOScanner.kInputName)
+            return;
+        if (navigator.mediaDevices) {
+            navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(function (stream) {
+                _this.fAudioNode = AIOScanner.fAudioContext.createMediaStreamSource(stream);
+                _this.fRouter = new AudioRouting(_this.fAudioNode, _this.fAudioNode.channelCount, _this.toString());
+                AIOScanner.send(obj.getOSCAddress(), 0, _this.fAudioNode.channelCount);
+                inscore.postMessageStrStr(obj.getOSCAddress(), "event", "ready");
+            })
+                .catch(function (err) {
+                console.log("Can't get audio input device: " + err);
+                obj.event("error");
+            });
+        }
+        else {
+            console.log("Can't get audio input device: navigator.mediaDevices not supported");
+            obj.event("error");
+        }
     };
     JSAudioioView.prototype.initView = function (obj) {
         var infos = obj.getIOInfos();
@@ -1759,8 +1772,6 @@ var JSAudioioView = /** @class */ (function (_super) {
         }
         if (infos.inputs)
             this.fAudioNode = AIOScanner.fOutput;
-        else if (infos.outputs)
-            this.fAudioNode = AIOScanner.fInput;
         if (this.fAudioNode)
             this.fRouter = new AudioRouting(this.fAudioNode, this.fAudioNode.channelCount, this.toString());
         return true;
@@ -1953,7 +1964,7 @@ var JSFaustView = /** @class */ (function (_super) {
     };
     JSFaustView.prototype.updateSpecific = function (obj) {
         if (this.fAudioNode) {
-            AudioTools.updateConnections(obj, this);
+            AudioTools.updateConnections(obj.getAudioInfos(), this);
             var data = obj.getFaustInfos(true, false);
             var compute = data.compute;
             if (compute != this.fCompute) {
@@ -3103,7 +3114,7 @@ var JSVideoView = /** @class */ (function (_super) {
         this.fVideo.style.filter = "drop-shadow(" + val.color + " " + val.xOffset + "px " + val.yOffset + "px " + val.blur + "px)";
     };
     JSVideoView.prototype.updateSpecific = function (obj) {
-        AudioTools.updateConnections(obj, this);
+        AudioTools.updateConnections(obj.getAudioInfos(), this);
         var media = obj.getMediaInfos();
         if (media.playing)
             this.fVideo.play();
