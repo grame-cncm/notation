@@ -905,11 +905,12 @@ var AIOScanner = /** @class */ (function () {
     AIOScanner.init = function () {
         if (!AIOScanner.fAudioContext) {
             AIOScanner.fAudioContext = new (window.AudioContext || window.webkitAudioContext)();
-            document.onreadystatechange = function () {
-                if (document.readyState === 'interactive') {
-                    AIOScanner.unlockAudioContext(AIOScanner.fAudioContext);
-                }
-            };
+            AIOScanner.unlockAudioContext(AIOScanner.fAudioContext);
+            // document.onreadystatechange = function() {
+            //     // if (document.readyState === 'interactive') {
+            //         AIOScanner.unlockAudioContext(AIOScanner.fAudioContext); 
+            //     // }
+            // }
         }
     };
     AIOScanner.scan = function (address) {
@@ -936,7 +937,8 @@ var AIOScanner = /** @class */ (function () {
         AIOScanner.fAudioContext.resume();
     };
     AIOScanner.unlockAudioContext = function (audioCtx) {
-        // if (audioCtx.state !== "suspended") return;
+        if (audioCtx.state !== "suspended")
+            return;
         AIOScanner.fUnlockEvents.forEach(function (e) { return document.body.addEventListener(e, AIOScanner.unlock, false); });
     };
     AIOScanner.fOutput = null;
