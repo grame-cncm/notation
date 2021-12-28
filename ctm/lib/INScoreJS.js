@@ -936,8 +936,7 @@ var AIOScanner = /** @class */ (function () {
         AIOScanner.fAudioContext.resume();
     };
     AIOScanner.unlockAudioContext = function (audioCtx) {
-        if (audioCtx.state !== "suspended")
-            return;
+        // if (audioCtx.state !== "suspended") return;
         AIOScanner.fUnlockEvents.forEach(function (e) { return document.body.addEventListener(e, AIOScanner.unlock, false); });
     };
     AIOScanner.fOutput = null;
