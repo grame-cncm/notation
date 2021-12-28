@@ -1761,7 +1761,7 @@ var JSAudioioView = /** @class */ (function (_super) {
             });
         }
         else {
-            console.log("Can't get audio input device: navigator.mediaDevices not supported");
+            console.log("Can't get audio input device: navigator.mediaDevices is not supported");
             obj.event("error");
         }
     };
