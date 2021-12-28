@@ -903,6 +903,7 @@ var AIOScanner = /** @class */ (function () {
     function AIOScanner() {
     }
     AIOScanner.init = function () {
+        console.log("AIOScanner.init");
         if (!AIOScanner.fAudioContext) {
             AIOScanner.fAudioContext = new (window.AudioContext || window.webkitAudioContext)();
             AIOScanner.unlockAudioContext(AIOScanner.fAudioContext);
@@ -935,8 +936,10 @@ var AIOScanner = /** @class */ (function () {
     AIOScanner.unlock = function () {
         AIOScanner.fUnlockEvents.forEach(function (e) { return document.body.removeEventListener(e, AIOScanner.unlock); });
         AIOScanner.fAudioContext.resume();
+        console.log("unlock", AIOScanner.fAudioContext);
     };
     AIOScanner.unlockAudioContext = function (audioCtx) {
+        console.log("unlockAudioContext", audioCtx);
         if (audioCtx.state !== "suspended")
             return;
         AIOScanner.fUnlockEvents.forEach(function (e) { return document.body.addEventListener(e, AIOScanner.unlock, false); });
